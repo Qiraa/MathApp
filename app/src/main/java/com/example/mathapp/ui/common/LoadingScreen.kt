@@ -21,7 +21,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(trackColor = MaterialTheme.colorScheme.primary)
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
 }
 

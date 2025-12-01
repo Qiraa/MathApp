@@ -7,4 +7,9 @@
     <string name="timetable_description">Расписание</string>
     <string name="math">Математика</string>
     <string name="date_picker">Выбрать дату</string>
+
+    <string name="navigation_bar_main">Главная</string>
+    <string name="navigation_bar_journal">Журнал</string>
+    <string name="navigation_bar_notifications">Уведомл.</string>
+    <string name="navigation_bar_profile">Профиль</string>
 </resources>
