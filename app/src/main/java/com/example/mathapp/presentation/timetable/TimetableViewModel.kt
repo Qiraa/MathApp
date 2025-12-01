@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class TimetableViewModel: ViewModel() {
     private val mutableState: MutableStateFlow<TimetableState> = MutableStateFlow(
-       TimetableState.Loading
+       TimetableState.Success
    )
     val state: StateFlow<TimetableState> = mutableState.asStateFlow()
 }
