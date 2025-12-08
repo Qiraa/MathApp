@@ -32,13 +32,13 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_error),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(160.dp),
+                modifier = Modifier.size(60.dp),
             )
             Text(
                 text = stringResource(R.string.error_title),
@@ -46,7 +46,6 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 32.sp,
             )
-
         }
     }
 }
