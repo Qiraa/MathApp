@@ -6,11 +6,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -34,16 +38,17 @@ fun TimetableItem(
     startTime: String,
     endTime: String,
     subject: String,
-    teacherName: String,
-    placeName: String,
+    professorName: String,
+    address: String,
     onOpenMap: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .padding(horizontal = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
-        ) {
+        Column(modifier = Modifier.width(48.dp)) {
             Text(
                 text = startTime,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -57,14 +62,16 @@ fun TimetableItem(
                 textAlign = TextAlign.Start,
             )
         }
+        Spacer(modifier = Modifier.width(22.dp))
         VerticalDivider(
             modifier = Modifier.fillMaxHeight(),
             thickness = 2.dp,
             color = MaterialTheme.colorScheme.secondary,
         )
+        Spacer(modifier = Modifier.width(16.dp))
         Box(
             modifier = Modifier
-                .padding(vertical = 22.dp, horizontal = 14.dp)
+                .padding(bottom = 16.dp)
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.secondary.copy(0.7f),
@@ -73,7 +80,7 @@ fun TimetableItem(
         ) {
             Column(
                 modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
                     text = subject,
@@ -82,14 +89,15 @@ fun TimetableItem(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start,
                 )
-                Box(modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                 ) {
                     Text(
-                        text = teacherName,
+                        text = professorName,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         textAlign = TextAlign.Start,
@@ -112,7 +120,7 @@ fun TimetableItem(
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
-                        text = placeName,
+                        text = address,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 16.sp,
                         textAlign = TextAlign.Start,
