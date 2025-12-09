@@ -1,27 +1,39 @@
 package com.example.mathapp.ui.common.navigation
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.mathapp.presentation.common.RootViewModel
 import com.example.mathapp.ui.journal.JournalScreen
 import com.example.mathapp.ui.notifications.NotificationsScreen
 import com.example.mathapp.ui.profile.ProfileScreen
 import com.example.mathapp.ui.timetable.TimetableScreen
 
 @Composable
-fun NavigationRoot(modifier: Modifier = Modifier) {
+fun NavigationRoot(
+    modifier: Modifier = Modifier,
+    viewModel: RootViewModel = viewModel(),
+) {
+    val state by viewModel.state.collectAsState()
+
     val navController = rememberNavController()
     val startDestination = NavigationScreen.Timetable
 
@@ -37,6 +49,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 
             NavigationBar(
                 currentGroup = currentGroup ?: NavigationGroup.MAIN,
+                badgeGroups = state.badgeGroups,
                 onOpenScreen = { screen ->
                     navController.navigate(screen) {
                         popUpTo(startDestination)
@@ -74,6 +87,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 private fun NavigationBar(
     modifier: Modifier = Modifier,
     currentGroup: NavigationGroup,
+    badgeGroups: Set<NavigationGroup>,
     onOpenScreen: (NavigationScreen) -> Unit,
 ) {
     NavigationBar(modifier = modifier) {
@@ -94,10 +108,21 @@ private fun NavigationBar(
                     onOpenScreen(screen)
                 },
                 icon = {
-                    Icon(
-                        painter = painterResource(iconId),
-                        contentDescription = null,
-                    )
+                    BadgedBox(
+                        badge = {
+                            if (group in badgeGroups) {
+                                Badge(
+                                    modifier = Modifier.scale(1.5f),
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(iconId),
+                            contentDescription = null,
+                        )
+                    }
                 },
                 label = { Text(stringResource(assets.titleId)) }
             )
