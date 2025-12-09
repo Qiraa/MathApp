@@ -2,8 +2,8 @@ package com.example.mathapp.presentation.timetable
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mathapp.data.MockTimetableRepository
-import com.example.mathapp.data.TimetableRepository
+import com.example.mathapp.data.timetable.TimetableRepository
+import com.example.mathapp.di.Di
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -11,10 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.sql.Date
 
 class TimetableViewModel(
-    private val timetableRepository: TimetableRepository = MockTimetableRepository(),
+    private val timetableRepository: TimetableRepository = Di.timetableRepository,
 ) : ViewModel() {
 
     private val mutableEffect: MutableSharedFlow<TimetableEffect> = MutableSharedFlow()
@@ -51,23 +50,27 @@ class TimetableViewModel(
     }
 
     private fun loadTimetable(date: Long) {
+        mutableState.value = TimetableState.Loading
         viewModelScope.launch {
-            val timetable = timetableRepository.getTimetableForToday(0, date)
-
-            mutableState.value = TimetableState.Success(
-                userName = "Екатерина",
-                date = timetable.date,
-                courses = timetable.items.map { item ->
-                    TimetableState.Success.Course(
-                        startTime = item.startTime,
-                        endTime = item.endTime,
-                        subject = item.subject,
-                        professorName = item.professorName,
-                        address = item.address,
-                    )
-                },
-                showDatePicker = false,
-            )
+            try {
+                val timetable = timetableRepository.getTimetableForToday(0, date)
+                mutableState.value = TimetableState.Success(
+                    userName = "Екатерина",
+                    date = timetable.date,
+                    courses = timetable.items.map { item ->
+                        TimetableState.Success.Course(
+                            startTime = item.startTime,
+                            endTime = item.endTime,
+                            subject = item.subject,
+                            professorName = item.professorName,
+                            address = item.address,
+                        )
+                    },
+                    showDatePicker = false,
+                )
+            } catch (_: Exception) {
+                mutableState.value = TimetableState.Error
+            }
         }
     }
 }

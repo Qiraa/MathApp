@@ -1,6 +1,6 @@
-package com.example.mathapp.data
+package com.example.mathapp.data.timetable
 
-import com.example.mathapp.domain.Timetable
+import com.example.mathapp.domain.timetable.Timetable
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

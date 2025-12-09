@@ -8,6 +8,9 @@
     <string name="math">Математика</string>
     <string name="date_picker">Выбрать дату</string>
 
+    <string name="notification_title">Уведомления</string>
+    <string name="notification_card_content_description">Удалить уведомление</string>
+
     <string name="navigation_bar_main">Главная</string>
     <string name="navigation_bar_journal">Журнал</string>
     <string name="navigation_bar_notifications">Уведомл.</string>

@@ -1,4 +1,4 @@
-package com.example.mathapp.domain
+package com.example.mathapp.domain.timetable
 
 data class Timetable(
     val date: String,
