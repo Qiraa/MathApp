@@ -5,13 +5,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -105,17 +108,19 @@ private fun SuccessContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             .padding(top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.timetable_title, userName),
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 22.sp,
+            fontSize = 16.sp,
             textAlign = TextAlign.Start,
         )
         Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = stringResource(R.string.timetable_description),
             color = MaterialTheme.colorScheme.onSurface,
             fontSize = 32.sp,
@@ -125,12 +130,13 @@ private fun SuccessContent(
         HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
             thickness = 2.dp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = MaterialTheme.colorScheme.surfaceVariant,
         )
         Row(
             modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .clickable(onClick = onOpenCalendarClick)
                 .background(
@@ -139,7 +145,7 @@ private fun SuccessContent(
                 )
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.secondary.copy(0.7f),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(0.7f),
                     shape = MaterialTheme.shapes.medium,
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -158,20 +164,35 @@ private fun SuccessContent(
                 contentDescription = null,
             )
         }
-        HorizontalDivider(modifier = Modifier.height(4.dp))
-        LazyColumn {
-            item {
-                TimetableHeader()
-            }
-            items(courses) { course ->
-                TimetableItem(
-                    startTime = course.startTime,
-                    endTime = course.endTime,
-                    subject = course.subject,
-                    professorName = course.professorName,
-                    address = course.address,
-                    onOpenMap = { onOpenMap(course.address) },
-                )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+            shape = MaterialTheme.shapes.large.copy(
+                bottomStart = CornerSize(0.dp),
+                bottomEnd = CornerSize(0.dp),
+            ),
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            ) {
+                item {
+                    TimetableHeader()
+                }
+                items(courses) { course ->
+                    TimetableItem(
+                        startTime = course.startTime,
+                        endTime = course.endTime,
+                        subject = course.subject,
+                        professorName = course.professorName,
+                        address = course.address,
+                        onOpenMap = { onOpenMap(course.address) },
+                    )
+                }
             }
         }
     }

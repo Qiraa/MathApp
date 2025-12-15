@@ -15,4 +15,9 @@
     <string name="navigation_bar_journal">Журнал</string>
     <string name="navigation_bar_notifications">Уведомл.</string>
     <string name="navigation_bar_profile">Профиль</string>
+    <string name="journal_title">Журнал</string>
+    <string name="journal_class_number">№</string>
+    <string name="journal_class_date">Дата занятия</string>
+    <string name="journal_class_visit">Посещение</string>
+    <string name="journal_class_score">Балл</string>
 </resources>
