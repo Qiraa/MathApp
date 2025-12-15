@@ -1,0 +1,484 @@
+diff --git a/.idea/yatool.xml b/.idea/yatool.xml
+new file mode 100644
+index 0000000..eefdf60
+--- /dev/null
++++ b/.idea/yatool.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="YaTool.Application.Settings">
++    <option name="yaToolPath" value="/usr/local/bin/ya" />
++    <option name="autoDownloadYaTool" value="true" />
++  </component>
++</project>
+\ No newline at end of file
+diff --git a/app/src/main/java/com/example/mathapp/MainActivity.kt b/app/src/main/java/com/example/mathapp/MainActivity.kt
+index 54f3c86..f17f08a 100644
+--- a/app/src/main/java/com/example/mathapp/MainActivity.kt
++++ b/app/src/main/java/com/example/mathapp/MainActivity.kt
+@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+ import androidx.activity.enableEdgeToEdge
+ import androidx.compose.ui.Modifier
+-import com.example.mathapp.ui.common.NavigationRoot
++import com.example.mathapp.ui.common.navigation.NavigationRoot
+ import com.example.mathapp.ui.common.theme.MathAppTheme
+ 
+ class MainActivity : ComponentActivity() {
+diff --git a/app/src/main/java/com/example/mathapp/ui/common/LoadingScreen.kt b/app/src/main/java/com/example/mathapp/ui/common/LoadingScreen.kt
+index a81135f..f673038 100644
+--- a/app/src/main/java/com/example/mathapp/ui/common/LoadingScreen.kt
++++ b/app/src/main/java/com/example/mathapp/ui/common/LoadingScreen.kt
+@@ -21,7 +21,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
+             .padding(horizontal = 16.dp),
+         contentAlignment = Alignment.Center,
+     ) {
+-        CircularProgressIndicator(trackColor = MaterialTheme.colorScheme.primary)
++        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+     }
+ }
+ 
+diff --git a/app/src/main/java/com/example/mathapp/ui/common/NavigationRoot.kt b/app/src/main/java/com/example/mathapp/ui/common/NavigationRoot.kt
+deleted file mode 100644
+index f0ded46..0000000
+--- a/app/src/main/java/com/example/mathapp/ui/common/NavigationRoot.kt
++++ /dev/null
+@@ -1,36 +0,0 @@
+-package com.example.mathapp.ui.common
+-
+-import androidx.compose.runtime.Composable
+-import androidx.compose.ui.Modifier
+-import androidx.navigation.compose.NavHost
+-import androidx.navigation.compose.composable
+-import androidx.navigation.compose.rememberNavController
+-import com.example.mathapp.ui.profile.ProfileScreen
+-import com.example.mathapp.ui.timetable.TimetableScreen
+-import kotlinx.serialization.Serializable
+-
+-object Screens {
+-
+-    @Serializable
+-    object Profile
+-
+-    @Serializable
+-    object Timetable
+-}
+-
+-@Composable
+-fun NavigationRoot(modifier: Modifier = Modifier) {
+-    val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = Screens.Profile) {
+-        composable<Screens.Profile> {
+-            ProfileScreen(
+-                modifier = modifier,
+-            )
+-        }
+-        composable<Screens.Timetable> {
+-            TimetableScreen(
+-                modifier = modifier
+-            )
+-        }
+-    }
+-}
+diff --git a/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationGroup.kt b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationGroup.kt
+new file mode 100644
+index 0000000..829bd29
+--- /dev/null
++++ b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationGroup.kt
+@@ -0,0 +1,61 @@
++package com.example.mathapp.ui.common.navigation
++
++import androidx.annotation.DrawableRes
++import androidx.annotation.Keep
++import androidx.annotation.StringRes
++import androidx.compose.runtime.Composable
++import com.example.mathapp.R
++import kotlinx.serialization.Serializable
++
++@Keep
++@Serializable
++enum class NavigationGroup(vararg val screenClasses: Class<out NavigationScreen>) {
++    MAIN(
++        NavigationScreen.Timetable::class.java,
++    ),
++    JOURNAL(
++        NavigationScreen.Journal::class.java,
++    ),
++    NOTIFICATIONS(
++        NavigationScreen.Notifications::class.java,
++    ),
++    PROFILE(
++        NavigationScreen.Profile::class.java,
++    ),
++}
++
++data class NotificationGroupAssets(
++    @StringRes val titleId: Int,
++    @DrawableRes val selectedIconId: Int,
++    @DrawableRes val unselectedIconId: Int,
++)
++
++@Composable
++fun NavigationGroup.assets(): NotificationGroupAssets {
++    return when (this) {
++        NavigationGroup.MAIN ->
++            NotificationGroupAssets(
++                titleId = R.string.navigation_bar_main,
++                selectedIconId = R.drawable.ic_main_selected,
++                unselectedIconId = R.drawable.ic_main_unselected,
++            )
++        NavigationGroup.JOURNAL ->
++            NotificationGroupAssets(
++                titleId = R.string.navigation_bar_journal,
++                selectedIconId = R.drawable.ic_journal_selected,
++                unselectedIconId = R.drawable.ic_journal_unselected,
++            )
++        NavigationGroup.NOTIFICATIONS ->
++            NotificationGroupAssets(
++                titleId = R.string.navigation_bar_notifications,
++                selectedIconId = R.drawable.ic_notifications_selected,
++                unselectedIconId = R.drawable.ic_notifications_unselected,
++            )
++        NavigationGroup.PROFILE ->
++            NotificationGroupAssets(
++                titleId = R.string.navigation_bar_profile,
++                selectedIconId = R.drawable.ic_profile_selected,
++                unselectedIconId = R.drawable.ic_profile_unselected,
++            )
++    }
++}
+diff --git a/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationRoot.kt b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationRoot.kt
+new file mode 100644
+index 0000000..2e0d85b
+--- /dev/null
++++ b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationRoot.kt
+@@ -0,0 +1,106 @@
++package com.example.mathapp.ui.common.navigation
++
++import androidx.compose.foundation.layout.padding
++import androidx.compose.material3.Icon
++import androidx.compose.material3.NavigationBar
++import androidx.compose.material3.NavigationBarItem
++import androidx.compose.material3.Scaffold
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.getValue
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.res.stringResource
++import androidx.navigation.compose.NavHost
++import androidx.navigation.compose.composable
++import androidx.navigation.compose.currentBackStackEntryAsState
++import androidx.navigation.compose.rememberNavController
++import com.example.mathapp.ui.journal.JournalScreen
++import com.example.mathapp.ui.notifications.NotificationsScreen
++import com.example.mathapp.ui.profile.ProfileScreen
++import com.example.mathapp.ui.timetable.TimetableScreen
++
++@Composable
++fun NavigationRoot(modifier: Modifier = Modifier) {
++    val navController = rememberNavController()
++    val startDestination = NavigationScreen.Timetable
++
++    val backStackEntry by navController.currentBackStackEntryAsState()
++    Scaffold(
++        modifier = modifier,
++        bottomBar = {
++            val currentGroup = NavigationGroup.entries.find { group ->
++                group.screenClasses.any { screenClass ->
++                    backStackEntry?.destination?.route == screenClass.route()
++                }
++            }
++
++            NavigationBar(
++                currentGroup = currentGroup ?: NavigationGroup.MAIN,
++                onOpenScreen = { screen ->
++                    navController.navigate(screen) {
++                        popUpTo(startDestination)
++                    }
++                }
++            )
++        }
++    ) { contentPadding ->
++        NavHost(navController = navController, startDestination = startDestination) {
++            composable<NavigationScreen.Timetable> {
++                TimetableScreen(
++                    modifier = modifier.padding(contentPadding)
++                )
++            }
++            composable<NavigationScreen.Journal> {
++                JournalScreen(
++                    modifier = modifier.padding(contentPadding)
++                )
++            }
++            composable<NavigationScreen.Notifications> {
++                NotificationsScreen(
++                    modifier = modifier.padding(contentPadding)
++                )
++            }
++            composable<NavigationScreen.Profile> {
++                ProfileScreen(
++                    modifier = modifier.padding(contentPadding),
++                )
++            }
++        }
++    }
++}
++
++@Composable
++private fun NavigationBar(
++    modifier: Modifier = Modifier,
++    currentGroup: NavigationGroup,
++    onOpenScreen: (NavigationScreen) -> Unit,
++) {
++    NavigationBar(modifier = modifier) {
++        NavigationGroup.entries.forEach { group ->
++            val isSelected = group == currentGroup
++            val assets = group.assets()
++            val iconId = if (isSelected) assets.selectedIconId else assets.unselectedIconId
++
++            NavigationBarItem(
++                selected = isSelected,
++                onClick = {
++                    val screen = when (group) {
++                        NavigationGroup.MAIN -> NavigationScreen.Timetable
++                        NavigationGroup.JOURNAL -> NavigationScreen.Journal
++                        NavigationGroup.NOTIFICATIONS -> NavigationScreen.Notifications
++                        NavigationGroup.PROFILE -> NavigationScreen.Profile
++                    }
++                    onOpenScreen(screen)
++                },
++                icon = {
++                    Icon(
++                        painter = painterResource(iconId),
++                        contentDescription = null,
++                    )
++                },
++                label = { Text(stringResource(assets.titleId)) }
++            )
++        }
++    }
++}
+diff --git a/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationScreen.kt b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationScreen.kt
+new file mode 100644
+index 0000000..945decb
+--- /dev/null
++++ b/app/src/main/java/com/example/mathapp/ui/common/navigation/NavigationScreen.kt
+@@ -0,0 +1,23 @@
++package com.example.mathapp.ui.common.navigation
++
++import kotlinx.serialization.Serializable
++
++@Serializable
++sealed interface NavigationScreen {
++
++    @Serializable
++    data object Profile : NavigationScreen
++
++    @Serializable
++    data object Timetable : NavigationScreen
++
++    @Serializable
++    data object Journal : NavigationScreen
++
++    @Serializable
++    data object Notifications : NavigationScreen
++}
++
++fun Class<out NavigationScreen>.route(): String {
++    return this.name.replace("$", ".")
++}
+diff --git a/app/src/main/java/com/example/mathapp/ui/journal/JournalScreen.kt b/app/src/main/java/com/example/mathapp/ui/journal/JournalScreen.kt
+new file mode 100644
+index 0000000..fa2b25c
+--- /dev/null
++++ b/app/src/main/java/com/example/mathapp/ui/journal/JournalScreen.kt
+@@ -0,0 +1,19 @@
++package com.example.mathapp.ui.journal
++
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++
++@Composable
++fun JournalScreen(modifier: Modifier = Modifier) {
++    // TODO Implement screen
++    Box(
++        modifier = modifier.fillMaxSize(),
++        contentAlignment = Alignment.Center,
++    ) {
++        Text("TODO: Журнал")
++    }
++}
+diff --git a/app/src/main/java/com/example/mathapp/ui/notifications/NotificationsScreen.kt b/app/src/main/java/com/example/mathapp/ui/notifications/NotificationsScreen.kt
+new file mode 100644
+index 0000000..94969fd
+--- /dev/null
++++ b/app/src/main/java/com/example/mathapp/ui/notifications/NotificationsScreen.kt
+@@ -0,0 +1,19 @@
++package com.example.mathapp.ui.notifications
++
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++
++@Composable
++fun NotificationsScreen(modifier: Modifier = Modifier) {
++    // TODO Implement screen
++    Box(
++        modifier = modifier.fillMaxSize(),
++        contentAlignment = Alignment.Center,
++    ) {
++        Text("TODO: Уведомления")
++    }
++}
+diff --git a/app/src/main/res/drawable/ic_journal_selected.xml b/app/src/main/res/drawable/ic_journal_selected.xml
+new file mode 100644
+index 0000000..4d3c982
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_journal_selected.xml
+@@ -0,0 +1,12 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="17dp"
++    android:height="20dp"
++    android:viewportWidth="17"
++    android:viewportHeight="20">
++  <path
++      android:pathData="M13.896,0C14.926,0 15.885,0.529 16.435,1.401L16.539,1.567C16.84,2.046 17,2.6 17,3.165V17.242C17,17.946 16.73,18.624 16.247,19.136C15.726,19.687 15.001,20 14.242,20H4.758C3.999,20 3.274,19.687 2.753,19.136C2.269,18.624 2,17.946 2,17.242V15H1C0.448,15 0,14.552 0,14C0,13.448 0.448,13 1,13H2V11H1C0.448,11 0,10.552 0,10C0,9.448 0.448,9 1,9H2V7H1C0.448,7 0,6.552 0,6C0,5.448 0.448,5 1,5H2V2.758C2,2.054 2.269,1.376 2.753,0.864C3.274,0.313 3.999,0 4.758,0H13.896Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M13,5L13,7A1,1 0,0 1,12 8L12,8A1,1 0,0 1,11 7L11,5A1,1 0,0 1,12 4L12,4A1,1 0,0 1,13 5z"
++      android:fillColor="#ffffff"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_journal_unselected.xml b/app/src/main/res/drawable/ic_journal_unselected.xml
+new file mode 100644
+index 0000000..3299182
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_journal_unselected.xml
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="17dp"
++    android:height="20dp"
++    android:viewportWidth="17"
++    android:viewportHeight="20">
++  <path
++      android:pathData="M13.896,0C14.926,0 15.885,0.529 16.435,1.401L16.539,1.567C16.84,2.046 17,2.6 17,3.165V17.242C17,17.946 16.73,18.624 16.247,19.136C15.726,19.687 15.001,20 14.242,20H4.758C3.999,20 3.274,19.687 2.753,19.136C2.269,18.624 2,17.946 2,17.242V15H1C0.448,15 0,14.552 0,14C0,13.448 0.448,13 1,13H2V11H1C0.448,11 0,10.552 0,10C0,9.448 0.448,9 1,9H2V7H1C0.448,7 0,6.552 0,6C0,5.448 0.448,5 1,5H2V2.758C2,2.054 2.269,1.376 2.753,0.864C3.274,0.313 3.999,0 4.758,0H13.896ZM4.758,2C4.549,2 4.35,2.086 4.207,2.237C4.074,2.378 4,2.564 4,2.758V5H5C5.552,5 6,5.448 6,6C6,6.552 5.552,7 5,7H4V9H5C5.552,9 6,9.448 6,10C6,10.552 5.552,11 5,11H4V13H5C5.552,13 6,13.448 6,14C6,14.552 5.552,15 5,15H4V17.242C4,17.436 4.074,17.622 4.207,17.763C4.35,17.914 4.549,18 4.758,18H14.242C14.451,18 14.65,17.914 14.793,17.763C14.926,17.622 15,17.436 15,17.242V3.165C15,2.977 14.947,2.792 14.847,2.633L14.742,2.467C14.559,2.176 14.239,2 13.896,2H4.758ZM12,4C12.552,4 13,4.448 13,5V7C13,7.552 12.552,8 12,8C11.448,8 11,7.552 11,7V5C11,4.448 11.448,4 12,4Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_main_selected.xml b/app/src/main/res/drawable/ic_main_selected.xml
+new file mode 100644
+index 0000000..9db1282
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_main_selected.xml
+@@ -0,0 +1,12 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="20dp"
++    android:height="21dp"
++    android:viewportWidth="20"
++    android:viewportHeight="21">
++  <path
++      android:pathData="M7.934,0.825C9.091,-0.275 10.908,-0.275 12.066,0.825L18.815,7.236C20.054,8.413 19.136,10.45 17.5,10.382V17.241C17.5,17.592 17.437,17.928 17.326,18.241H19C19.552,18.241 20,18.689 20,19.241C20,19.793 19.552,20.241 19,20.241H1C0.448,20.241 0,19.793 0,19.241C0,18.689 0.448,18.241 1,18.241H2.674C2.563,17.928 2.5,17.592 2.5,17.241V10.382C0.864,10.45 -0.054,8.413 1.185,7.236L7.934,0.825Z"
++      android:fillColor="#000000"/>
++  <path
++      android:pathData="M11,12.241C11.552,12.241 12,12.689 12,13.241V18.241H8V13.241C8,12.689 8.448,12.241 9,12.241H11Z"
++      android:fillColor="#ffffff"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_main_unselected.xml b/app/src/main/res/drawable/ic_main_unselected.xml
+new file mode 100644
+index 0000000..ed8f112
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_main_unselected.xml
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="20dp"
++    android:height="21dp"
++    android:viewportWidth="20"
++    android:viewportHeight="21">
++  <path
++      android:pathData="M7.934,0.825C9.091,-0.275 10.908,-0.275 12.066,0.825L18.815,7.236C20.054,8.413 19.136,10.45 17.5,10.382V17.241C17.5,17.592 17.437,17.928 17.326,18.241H19C19.552,18.241 20,18.689 20,19.241C20,19.793 19.552,20.241 19,20.241H1C0.448,20.241 0,19.793 0,19.241C0,18.689 0.448,18.241 1,18.241H2.674C2.563,17.928 2.5,17.592 2.5,17.241V10.382C0.864,10.45 -0.054,8.413 1.185,7.236L7.934,0.825ZM10.689,2.274C10.303,1.908 9.697,1.908 9.312,2.274L2.883,8.381C3.78,8.482 4.5,9.242 4.5,10.192V17.241C4.5,17.793 4.948,18.241 5.5,18.241H8V13.241C8,12.689 8.448,12.241 9,12.241H11C11.552,12.241 12,12.689 12,13.241V18.241H14.5C15.052,18.241 15.5,17.793 15.5,17.241V10.192C15.5,9.242 16.22,8.483 17.116,8.381L10.689,2.274Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_notifications_selected.xml b/app/src/main/res/drawable/ic_notifications_selected.xml
+new file mode 100644
+index 0000000..91ea990
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_notifications_selected.xml
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="18dp"
++    android:height="21dp"
++    android:viewportWidth="18"
++    android:viewportHeight="21">
++  <path
++      android:pathData="M9,0C9.552,0 9.999,0.47 10,1.05C10,1.07 9.998,1.091 9.997,1.111C13.667,1.555 16.499,4.413 16.5,7.875L16.49,8.226C16.486,8.284 16.48,8.342 16.475,8.4H16.5V12.851C16.499,13.104 16.6,13.357 16.776,13.54C16.989,13.763 17.201,13.987 17.414,14.21C17.787,14.599 18.001,15.136 18,15.676C18.025,16.808 17.007,17.827 15.875,17.801H12.539C12.525,17.803 12.512,17.805 12.498,17.808C12.499,17.822 12.5,17.836 12.5,17.851L12.495,18.013C12.401,19.677 10.872,21 9,21C7.127,21 5.598,19.677 5.504,18.013L5.5,17.851C5.5,17.836 5.499,17.822 5.5,17.808C5.487,17.806 5.474,17.803 5.461,17.801H2.125C0.993,17.827 -0.025,16.808 0,15.676C-0.001,15.136 0.213,14.599 0.586,14.21C0.799,13.987 1.012,13.763 1.224,13.54C1.4,13.357 1.501,13.104 1.5,12.851V8.4H1.524C1.519,8.342 1.513,8.284 1.509,8.226L1.5,7.875C1.5,4.414 4.331,1.556 8.001,1.111C8,1.091 8,1.07 8,1.05C8,0.47 8.447,0 9,0Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_notifications_unselected.xml b/app/src/main/res/drawable/ic_notifications_unselected.xml
+new file mode 100644
+index 0000000..f0e9c3e
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_notifications_unselected.xml
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="18dp"
++    android:height="21dp"
++    android:viewportWidth="18"
++    android:viewportHeight="21">
++  <path
++      android:pathData="M9,0C9.553,0 10,0.47 10,1.05C10,1.07 9.999,1.091 9.998,1.111C13.668,1.555 16.5,4.413 16.5,7.875L16.491,8.226C16.487,8.284 16.481,8.342 16.476,8.4H16.5V12.851C16.499,13.104 16.6,13.357 16.776,13.54C16.988,13.763 17.201,13.987 17.414,14.21C17.787,14.599 18.001,15.136 18,15.676C18.025,16.808 17.007,17.827 15.875,17.801H12.5C12.5,17.817 12.5,17.834 12.5,17.851L12.496,18.013C12.401,19.677 10.873,21 9,21C7.128,21 5.599,19.677 5.505,18.013L5.5,17.851C5.5,17.834 5.501,17.817 5.501,17.801H2.125C0.993,17.826 -0.025,16.808 0,15.676C-0.001,15.137 0.214,14.599 0.586,14.21C0.799,13.987 1.012,13.763 1.224,13.54C1.4,13.357 1.501,13.104 1.5,12.851V8.4H1.525C1.52,8.342 1.514,8.284 1.51,8.226L1.5,7.875C1.501,4.414 4.332,1.556 8.002,1.111C8.001,1.091 8,1.07 8,1.05C8.001,0.47 8.448,0 9,0ZM7.503,17.801C7.502,17.818 7.5,17.834 7.5,17.851C7.501,18.293 7.969,19 9,19C10.032,19 10.5,18.293 10.5,17.851C10.5,17.834 10.499,17.818 10.498,17.801H7.503ZM9,3.05C5.781,3.05 3.501,5.384 3.5,7.875C3.5,8.051 3.513,8.226 3.536,8.399H3.5V12.851C3.503,13.612 3.2,14.37 2.673,14.92C2.461,15.143 2.247,15.367 2.035,15.59C2.013,15.613 2,15.645 2,15.676C1.998,15.741 2.061,15.803 2.125,15.801H6.347C6.363,15.784 6.377,15.766 6.393,15.75H11.608C11.624,15.766 11.638,15.784 11.654,15.801H15.875C15.94,15.804 16.002,15.741 16,15.676C16,15.644 15.987,15.613 15.965,15.59C15.753,15.367 15.54,15.143 15.328,14.92C14.801,14.37 14.497,13.612 14.5,12.851V8.4L14.5,8.399H14.465C14.488,8.226 14.5,8.051 14.5,7.875C14.5,5.384 12.22,3.05 9,3.05Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_profile_selected.xml b/app/src/main/res/drawable/ic_profile_selected.xml
+new file mode 100644
+index 0000000..0d11f3c
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_profile_selected.xml
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="16dp"
++    android:height="20dp"
++    android:viewportWidth="16"
++    android:viewportHeight="20">
++  <path
++      android:pathData="M8,11C12.418,11 16,14.582 16,19C16,19.552 15.552,20 15,20C10.5,20 3,20 1,20C0.448,20 0,19.552 0,19C0,14.582 3.582,11 8,11ZM8,0C10.761,0 13,2.239 13,5C13,7.761 10.761,10 8,10C5.239,10 3,7.761 3,5C3,2.239 5.239,0 8,0Z"
++      android:fillColor="#000000"/>
++</vector>
+diff --git a/app/src/main/res/drawable/ic_profile_unselected.xml b/app/src/main/res/drawable/ic_profile_unselected.xml
+new file mode 100644
+index 0000000..25138db
+--- /dev/null
++++ b/app/src/main/res/drawable/ic_profile_unselected.xml
+@@ -0,0 +1,13 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="16dp"
++    android:height="20dp"
++    android:viewportWidth="16"
++    android:viewportHeight="20">
++  <path
++      android:pathData="M15,19C15,15.134 11.866,12 8,12C4.134,12 1,15.134 1,19M8,9C5.791,9 4,7.209 4,5C4,2.791 5.791,1 8,1C10.209,1 12,2.791 12,5C12,7.209 10.209,9 8,9Z"
++      android:strokeLineJoin="round"
++      android:strokeWidth="2"
++      android:fillColor="#00000000"
++      android:strokeColor="#000000"
++      android:strokeLineCap="round"/>
++</vector>
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+index d80a183..664adec 100644
+--- a/app/src/main/res/values/strings.xml
++++ b/app/src/main/res/values/strings.xml
+@@ -7,4 +7,9 @@
+     <string name="timetable_description">Расписание</string>
+     <string name="math">Математика</string>
+     <string name="date_picker">Выбрать дату</string>
++
++    <string name="navigation_bar_main">Главная</string>
++    <string name="navigation_bar_journal">Журнал</string>
++    <string name="navigation_bar_notifications">Уведомл.</string>
++    <string name="navigation_bar_profile">Профиль</string>
+ </resources>
