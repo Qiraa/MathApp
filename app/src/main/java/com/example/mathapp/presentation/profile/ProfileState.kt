@@ -4,7 +4,7 @@ import com.example.mathapp.ui.profile.Child
 
 sealed interface ProfileState {
 
-    data class Success(val child: Child): ProfileState
+    data object Success: ProfileState
 
     data object Error: ProfileState
 

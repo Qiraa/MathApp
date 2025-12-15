@@ -5,5 +5,6 @@ import androidx.annotation.DrawableRes
 data class Parent(
     @DrawableRes val imageId: Int? = null,
     val name: String,
-    val children: List<String>,
+    val phone: String,
+    val children: List<Child>,
 )
