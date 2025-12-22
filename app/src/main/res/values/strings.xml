@@ -5,7 +5,6 @@
 
     <string name="timetable_title">Добро пожаловать, %s</string>
     <string name="timetable_description">Расписание</string>
-    <string name="math">Математика</string>
     <string name="date_picker">Выбрать дату</string>
 
     <string name="notification_title">Уведомления</string>
@@ -15,6 +14,15 @@
     <string name="navigation_bar_journal">Журнал</string>
     <string name="navigation_bar_notifications">Уведомл.</string>
     <string name="navigation_bar_profile">Профиль</string>
+
+    <string name="profile_title">Профиль</string>
+    <string name="student">Ученик</string>
+    <string name="parent">Родитель</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="courses">Курсы</string>
+    <string name="course_time">Время занятий</string>
+    <string name="address">Место проведения</string>
+    <string name="professor_name">Преподаватель</string>
     <string name="journal_title">Журнал</string>
     <string name="journal_class_number">№</string>
     <string name="journal_class_date">Дата занятия</string>

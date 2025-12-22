@@ -9,17 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class ProfileViewModel: ViewModel() {
 
     private val mutableState: MutableStateFlow<ProfileState> = MutableStateFlow(
-        ProfileState.Success(
-            Child(
-                imageId = null,
-                name = "Иванов Иван",
-                parentName = "Иванова Анна",
-                phoneNumber = "799912345678",
-                subjects = List(2) {
-                    "Информатика"; "Математика"
-                }
-            )
-        )
+        ProfileState.Success
     )
     val state: StateFlow<ProfileState> = mutableState.asStateFlow()
 }
