@@ -23,4 +23,9 @@
     <string name="course_time">Время занятий</string>
     <string name="address">Место проведения</string>
     <string name="professor_name">Преподаватель</string>
+    <string name="journal_title">Журнал</string>
+    <string name="journal_class_number">№</string>
+    <string name="journal_class_date">Дата занятия</string>
+    <string name="journal_class_visit">Посещение</string>
+    <string name="journal_class_score">Балл</string>
 </resources>
