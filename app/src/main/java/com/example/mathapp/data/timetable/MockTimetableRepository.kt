@@ -11,7 +11,30 @@ class MockTimetableRepository : TimetableRepository {
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale("RU"))
 
     private val mocks: Map<String, List<Timetable.Item>> = mapOf(
-        "15.12.2025" to listOf(
+        "24.12.2025" to listOf(
+            Timetable.Item(
+                "Математика",
+                "Рябова Алевтина Витальевна",
+                "4 к, ул. Нефтезаводская 11, ауд. 201",
+                "14:30",
+                "16:00",
+            ),
+            Timetable.Item(
+                "Информатика",
+                "Рябова Алевтина Витальевна",
+                "4 к, ул. Нефтезаводская 11, ауд. 201",
+                "16:05",
+                "17:00",
+            ),
+            Timetable.Item(
+                "Шахматы",
+                "Рябова Алевтина Витальевна",
+                "4 к, ул. Нефтезаводская 11, ауд. 201",
+                "17:30",
+                "18:00",
+            )
+        ),
+        "25.12.2025" to listOf(
             Timetable.Item(
                 "Математика",
                 "Рябова Алевтина Витальевна",

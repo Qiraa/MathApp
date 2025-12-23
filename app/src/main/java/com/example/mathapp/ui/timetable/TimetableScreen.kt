@@ -16,11 +16,13 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -75,9 +77,11 @@ fun TimetableScreen(
         TimetableState.Loading -> LoadingScreen(modifier = modifier)
         is TimetableState.Success -> {
             if (currentState.showDatePicker) {
-                Dialog(onDismissRequest = viewModel::hideDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = viewModel::hideDatePicker,
+                    confirmButton = { },
+                ) {
                     DatePicker(
-                        modifier = Modifier.shadow(elevation = 4.dp),
                         state = datePickerState,
                         showModeToggle = false,
                     )
