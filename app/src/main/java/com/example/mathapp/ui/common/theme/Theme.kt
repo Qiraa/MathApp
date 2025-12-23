@@ -39,7 +39,7 @@ private val Shapes = Shapes(
 @Composable
 fun MathAppTheme(
     darkTheme: Boolean = false,
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
