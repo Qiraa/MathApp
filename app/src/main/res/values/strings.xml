@@ -28,4 +28,13 @@
     <string name="journal_class_date">Дата занятия</string>
     <string name="journal_class_visit">Посещение</string>
     <string name="journal_class_score">Балл</string>
+    <string name="open_content_description">Open</string>
+    <string name="profile_course_time">Время занятий</string>
+    <string name="profile_course_address">Место проведения</string>
+    <string name="profile_course_professors">Преподаватели</string>
+    <string name="my_children">Мои дети</string>
+    <string name="profile_delete_account">Удалить аккаунт</string>
+    <string name="delete_account_title">Удаление аккаунта</string>
+    <string name="delete_account_text">Для удаления профиля подойтите к администратору</string>
+    <string name="delete_account_button_text">Понятно</string>
 </resources>
