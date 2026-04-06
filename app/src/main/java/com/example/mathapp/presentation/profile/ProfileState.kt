@@ -4,7 +4,7 @@ sealed interface ProfileState {
 
     data class Success(
         val userInfo: UserInfo,
-    ): ProfileState {
+    ) : ProfileState {
 
         sealed interface UserInfo {
 
@@ -17,14 +17,32 @@ sealed interface ProfileState {
                 override val avatarUrl: String?,
                 override val phone: String,
                 val courses: List<Course>,
-            ): UserInfo
+            ) : UserInfo
 
             data class Parent(
                 override val name: String,
                 override val avatarUrl: String?,
                 override val phone: String,
                 val children: List<Child>,
-            ): UserInfo
+            ) : UserInfo
+
+            data class Professor(
+                override val name: String,
+                override val avatarUrl: String?,
+                override val phone: String,
+                val professorType: String,
+                val workPlace: String,
+                val groups: List<Group>,
+            ) : UserInfo {
+
+                data class Group(
+                    val courseName: String,
+                    val dayOfWeek: String,
+                    val timeSet: String,
+                    val groupType: String,
+                    val studentCount: Int,
+                )
+            }
         }
 
         data class Course(
@@ -35,7 +53,7 @@ sealed interface ProfileState {
         )
     }
 
-    data object Error: ProfileState
+    data object Error : ProfileState
 
-    data object Loading: ProfileState
+    data object Loading : ProfileState
 }

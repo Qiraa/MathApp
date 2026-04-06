@@ -3,14 +3,13 @@ package com.example.mathapp.presentation.notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathapp.data.notification.NotificationRepository
-import com.example.mathapp.di.Di
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class NotificationViewModel(
-    private val notificationRepository: NotificationRepository = Di.notificationRepository,
+    private val notificationRepository: NotificationRepository,
 ) : ViewModel() {
 
     private val mutableState: MutableStateFlow<NotificationState> =

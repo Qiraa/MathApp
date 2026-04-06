@@ -1,8 +1,8 @@
 package com.example.mathapp.data.journal
 
-import com.example.mathapp.domain.journal.Journal
+import com.example.mathapp.domain.journal.JournalData
 
 interface JournalRepository {
 
-    suspend fun getJournal(studentId: Int): Journal
+    suspend fun getJournal(): JournalData
 }

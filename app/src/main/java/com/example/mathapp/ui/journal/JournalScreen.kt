@@ -32,10 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.mathapp.R
 import com.example.mathapp.presentation.journal.JournalState
-import com.example.mathapp.presentation.journal.JournalState.Success.JournalClass
+import com.example.mathapp.presentation.journal.JournalState.StudentSuccess.JournalClass
 import com.example.mathapp.presentation.journal.JournalViewModel
 import com.example.mathapp.ui.common.ErrorScreen
 import com.example.mathapp.ui.common.LoadingScreen
@@ -43,7 +43,7 @@ import com.example.mathapp.ui.common.LoadingScreen
 @Composable
 fun JournalScreen(
     modifier: Modifier = Modifier,
-    viewModel: JournalViewModel = viewModel(),
+    viewModel: JournalViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -52,8 +52,8 @@ fun JournalScreen(
             ErrorScreen(modifier = modifier)
         JournalState.Loading ->
             LoadingScreen(modifier = modifier)
-        is JournalState.Success ->
-            SuccessContent(
+        is JournalState.StudentSuccess ->
+            StudentContent(
                 modifier = modifier,
                 courses = currentState.courses,
                 activeCourseIndex = currentState.activeCourseIndex,
@@ -61,11 +61,13 @@ fun JournalScreen(
                 onCourseChange = viewModel::changeCourse,
                 onOpenFile = viewModel::openFile,
             )
+        is JournalState.ProfessorSuccess ->
+            ErrorScreen(modifier = modifier)
     }
 }
 
 @Composable
-private fun SuccessContent(
+private fun StudentContent(
     modifier: Modifier = Modifier,
     courses: List<String>,
     activeCourseIndex: Int,
@@ -190,4 +192,3 @@ private fun CoursePage(
         }
     }
 }
-

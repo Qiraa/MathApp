@@ -2,54 +2,32 @@ package com.example.mathapp.presentation.journal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mathapp.domain.journal.Journal
-import com.example.mathapp.domain.journal.JournalClass
 import com.example.mathapp.data.journal.JournalRepository
-import com.example.mathapp.di.Di
+import com.example.mathapp.domain.journal.JournalClass
+import com.example.mathapp.domain.journal.JournalData
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class JournalViewModel(
-    private val journalRepository: JournalRepository = Di.journalRepository,
+    private val journalRepository: JournalRepository,
 ) : ViewModel() {
 
-    private val isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val journal: MutableStateFlow<Journal?> = MutableStateFlow(null)
-    private val selectedCourseIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val mutableState: MutableStateFlow<JournalState> = MutableStateFlow(JournalState.Loading)
+    val state: StateFlow<JournalState> = mutableState.asStateFlow()
 
-    val state: StateFlow<JournalState> = combine(
-        isLoading,
-        journal,
-        selectedCourseIndex,
-    ) { loading, journal, selectedCourseIndex ->
-        if (loading) {
-            JournalState.Loading
-        } else if (journal == null) {
-            JournalState.Error
-        } else {
-            val courses = journal.classesForCourse.keys.toList()
-            val selectedCourse = courses[selectedCourseIndex]
-
-            JournalState.Success(
-                courses = courses,
-                activeCourseIndex = selectedCourseIndex,
-                classes = journal.classesForCourse
-                    .getValue(selectedCourse)
-                    .map { it.toStateJournalClass() },
-            )
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), JournalState.Loading)
+    private var studentData: JournalData.Student? = null
+    private var selectedCourseIndex: Int = 0
 
     init {
         loadJournal()
     }
 
     fun changeCourse(index: Int) {
-        selectedCourseIndex.value = index
+        val data = studentData ?: return
+        selectedCourseIndex = index
+        mutableState.value = data.toSuccessState(index)
     }
 
     fun openFile(name: String) {
@@ -57,24 +35,54 @@ class JournalViewModel(
     }
 
     private fun loadJournal() {
-        isLoading.value = true
+        mutableState.value = JournalState.Loading
         viewModelScope.launch {
-            runCatching {
-                journal.value = journalRepository.getJournal(0)
-            }
-            isLoading.value = false
+            runCatching { journalRepository.getJournal() }
+                .onSuccess { data ->
+                    when (data) {
+                        is JournalData.Professor -> {
+                            mutableState.value = JournalState.ProfessorSuccess(
+                                groups = data.professorJournal.groups.map { group ->
+                                    JournalState.ProfessorSuccess.Group(
+                                        courseName = group.courseName,
+                                        dayOfWeek = group.dayOfWeek,
+                                        timeSet = group.timeSet,
+                                        groupType = group.groupType,
+                                        studentCount = group.studentCount,
+                                    )
+                                }
+                            )
+                        }
+                        is JournalData.Student -> {
+                            studentData = data
+                            mutableState.value = data.toSuccessState(selectedCourseIndex)
+                        }
+                    }
+                }
+                .onFailure { mutableState.value = JournalState.Error }
         }
     }
 
-    private fun JournalClass.toStateJournalClass(): JournalState.Success.JournalClass {
-        return JournalState.Success.JournalClass(
+    private fun JournalData.Student.toSuccessState(courseIndex: Int): JournalState.StudentSuccess {
+        val courses = journal.classesForCourse.keys.toList()
+        val safeIndex = courseIndex.coerceIn(0, (courses.size - 1).coerceAtLeast(0))
+        val selectedCourse = courses[safeIndex]
+        return JournalState.StudentSuccess(
+            courses = courses,
+            activeCourseIndex = safeIndex,
+            classes = journal.classesForCourse.getValue(selectedCourse).map { it.toStateClass() },
+        )
+    }
+
+    private fun JournalClass.toStateClass(): JournalState.StudentSuccess.JournalClass {
+        return JournalState.StudentSuccess.JournalClass(
             date = date,
             visited = visited,
             score = score,
-            homework = homework?.let { homework ->
-                JournalState.Success.JournalClass.Homework(
-                    description = homework.description,
-                    files = homework.files,
+            homework = homework?.let {
+                JournalState.StudentSuccess.JournalClass.Homework(
+                    description = it.description,
+                    files = it.files,
                 )
             },
         )
