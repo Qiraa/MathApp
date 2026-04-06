@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.mathapp.R
 import com.example.mathapp.presentation.timetable.TimetableEffect
 import com.example.mathapp.presentation.timetable.TimetableState
@@ -54,7 +54,7 @@ import com.example.mathapp.ui.common.launchViewIntent
 @Composable
 fun TimetableScreen(
     modifier: Modifier = Modifier,
-    viewModel: TimetableViewModel = viewModel(),
+    viewModel: TimetableViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current

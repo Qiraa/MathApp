@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.mathapp.R
 import com.example.mathapp.presentation.notification.NotificationState
 import com.example.mathapp.presentation.notification.NotificationViewModel
@@ -32,7 +32,7 @@ import com.example.mathapp.ui.common.LoadingScreen
 @Composable
 fun NotificationsScreen(
     modifier: Modifier = Modifier,
-    viewModel: NotificationViewModel = viewModel(),
+    viewModel: NotificationViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
     when(val currentState = state) {

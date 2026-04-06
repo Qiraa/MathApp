@@ -3,11 +3,11 @@ package com.example.mathapp.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathapp.data.profile.ProfileRepository
-import com.example.mathapp.di.Di
 import com.example.mathapp.domain.profile.Profile
 import com.example.mathapp.presentation.profile.ProfileState.Success.Course
 import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Child
 import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Parent
+import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Professor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class ProfileViewModel(
-    private val profileRepository: ProfileRepository = Di.profileRepository,
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     val state: StateFlow<ProfileState> = flow { emit(profileRepository.getProfile()) }
@@ -61,6 +61,24 @@ class ProfileViewModel(
                                     address = course.address,
                                 )
                             },
+                        )
+                    },
+                )
+            )
+            is Profile.Professor -> ProfileState.Success(
+                userInfo = Professor(
+                    name = profile.name,
+                    avatarUrl = profile.avatarUrl,
+                    phone = profile.phone,
+                    professorType = profile.professorType,
+                    workPlace = profile.workPlace,
+                    groups = profile.groups.map { group ->
+                        Professor.Group(
+                            courseName = group.courseName,
+                            dayOfWeek = group.dayOfWeek,
+                            timeSet = group.timeSet,
+                            groupType = group.groupType,
+                            studentCount = group.studentCount,
                         )
                     },
                 )

@@ -2,11 +2,11 @@ package com.example.mathapp.presentation.journal
 
 sealed interface JournalState {
 
-    data class Success(
+    data class StudentSuccess(
         val courses: List<String>,
         val activeCourseIndex: Int,
         val classes: List<JournalClass>,
-    ): JournalState {
+    ) : JournalState {
 
         data class JournalClass(
             val date: String,
@@ -22,7 +22,20 @@ sealed interface JournalState {
         }
     }
 
-    data object Error: JournalState
+    data class ProfessorSuccess(
+        val groups: List<Group>,
+    ) : JournalState {
 
-    data object Loading: JournalState
+        data class Group(
+            val courseName: String,
+            val dayOfWeek: String,
+            val timeSet: String,
+            val groupType: String,
+            val studentCount: Int,
+        )
+    }
+
+    data object Error : JournalState
+
+    data object Loading : JournalState
 }

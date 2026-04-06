@@ -2,6 +2,7 @@ package com.example.mathapp.data.journal
 
 import com.example.mathapp.domain.journal.Journal
 import com.example.mathapp.domain.journal.JournalClass
+import com.example.mathapp.domain.journal.JournalData
 
 class MockJournalRepository : JournalRepository {
 
@@ -60,5 +61,5 @@ class MockJournalRepository : JournalRepository {
     )
 
 
-    override suspend fun getJournal(studentId: Int): Journal = mocks
+    override suspend fun getJournal(): JournalData = JournalData.Student(mocks)
 }
