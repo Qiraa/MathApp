@@ -3,7 +3,6 @@ package com.example.mathapp.presentation.timetable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mathapp.data.timetable.TimetableRepository
-import com.example.mathapp.di.Di
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TimetableViewModel(
-    private val timetableRepository: TimetableRepository = Di.timetableRepository,
+    private val timetableRepository: TimetableRepository,
 ) : ViewModel() {
 
     private val mutableEffect: MutableSharedFlow<TimetableEffect> = MutableSharedFlow()

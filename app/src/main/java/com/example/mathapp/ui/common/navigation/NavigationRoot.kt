@@ -16,13 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mathapp.presentation.common.RootViewModel
 import com.example.mathapp.ui.journal.JournalScreen
+import org.koin.androidx.compose.koinViewModel
 import com.example.mathapp.ui.notifications.NotificationsScreen
 import com.example.mathapp.ui.profile.ProfileScreen
 import com.example.mathapp.ui.timetable.TimetableScreen
@@ -30,7 +30,7 @@ import com.example.mathapp.ui.timetable.TimetableScreen
 @Composable
 fun NavigationRoot(
     modifier: Modifier = Modifier,
-    viewModel: RootViewModel = viewModel(),
+    viewModel: RootViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
 

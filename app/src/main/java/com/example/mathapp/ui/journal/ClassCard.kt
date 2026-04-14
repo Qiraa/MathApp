@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.mathapp.R
-import com.example.mathapp.presentation.journal.JournalState.Success.JournalClass
+import com.example.mathapp.presentation.journal.JournalState.StudentSuccess.JournalClass
 
 @Composable
 fun ClassCard(

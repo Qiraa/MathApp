@@ -1,5 +1,10 @@
 package com.example.mathapp.domain.journal
 
+sealed interface JournalData {
+    data class Student(val journal: Journal) : JournalData
+    data class Professor(val professorJournal: ProfessorJournal) : JournalData
+}
+
 data class Journal(
     val classesForCourse: Map<String, List<JournalClass>>,
 )
@@ -16,3 +21,13 @@ data class JournalClass(
         val files: List<String>,
     )
 }
+
+data class ProfessorJournal(val groups: List<JournalGroup>)
+
+data class JournalGroup(
+    val courseName: String,
+    val dayOfWeek: String,
+    val timeSet: String,
+    val groupType: String,
+    val studentCount: Int,
+)

@@ -63,4 +63,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.serialization)
+    implementation(libs.okhttp.logging)
+    implementation(libs.security.crypto)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 }

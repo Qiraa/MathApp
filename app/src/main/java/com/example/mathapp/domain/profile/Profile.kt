@@ -18,6 +18,15 @@ sealed interface Profile {
         override val phone: String,
         val children: List<Child>,
     ) : Profile
+
+    data class Professor(
+        override val name: String,
+        override val avatarUrl: String?,
+        override val phone: String,
+        val professorType: String,
+        val workPlace: String,
+        val groups: List<ProfessorGroup>,
+    ) : Profile
 }
 
 data class Course(
@@ -25,4 +34,12 @@ data class Course(
     val time: String,
     val professors: List<String>,
     val address: String,
+)
+
+data class ProfessorGroup(
+    val courseName: String,
+    val dayOfWeek: String,
+    val timeSet: String,
+    val groupType: String,
+    val studentCount: Int,
 )

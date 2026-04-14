@@ -42,12 +42,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import org.koin.androidx.compose.koinViewModel
 import com.example.mathapp.R
 import com.example.mathapp.presentation.profile.ProfileState
 import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo
 import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Child
 import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Parent
+import com.example.mathapp.presentation.profile.ProfileState.Success.UserInfo.Professor
 import com.example.mathapp.presentation.profile.ProfileViewModel
 import com.example.mathapp.ui.common.ErrorScreen
 import com.example.mathapp.ui.common.LoadingScreen
@@ -55,7 +56,7 @@ import com.example.mathapp.ui.common.LoadingScreen
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     when (val currentState = state) {
@@ -111,6 +112,9 @@ private fun SuccessContent(
         ) {
             ProfileParentContent(parent = userInfo)
         }
+
+        is Professor ->
+            ErrorScreen(modifier = modifier)
     }
 }
 
