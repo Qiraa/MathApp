@@ -115,7 +115,7 @@ private fun SuccessContent(
 }
 
 @Composable
-private fun ProfileContainer(
+fun ProfileContainer(
     modifier: Modifier = Modifier,
     name: String,
     role: String,

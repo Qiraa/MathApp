@@ -35,7 +35,8 @@ fun NavigationRoot(
     val state by viewModel.state.collectAsState()
 
     val navController = rememberNavController()
-    val startDestination = NavigationScreen.Timetable
+    val authStartDestination = NavigationScreen.Auth
+    val mainStartDestination = NavigationScreen.Timetable
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     Scaffold(
@@ -47,18 +48,32 @@ fun NavigationRoot(
                 }
             }
 
-            NavigationBar(
-                currentGroup = currentGroup ?: NavigationGroup.MAIN,
-                badgeGroups = state.badgeGroups,
-                onOpenScreen = { screen ->
-                    navController.navigate(screen) {
-                        popUpTo(startDestination)
+            if (currentGroup != null) {
+                NavigationBar(
+                    currentGroup = currentGroup,
+                    badgeGroups = state.badgeGroups,
+                    onOpenScreen = { screen ->
+                        navController.navigate(screen) {
+                            popUpTo(mainStartDestination)
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { contentPadding ->
-        NavHost(navController = navController, startDestination = startDestination) {
+        NavHost(navController = navController, startDestination = authStartDestination) {
+            composable<NavigationScreen.Auth> {
+                AuthScreen(
+                    modifier = modifier.padding(contentPadding),
+                    onAuthorized = { screen ->
+                        navController.navigate(screen) {
+                            popUpTo(authStartDestination) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                )
+            }
             composable<NavigationScreen.Timetable> {
                 TimetableScreen(
                     modifier = modifier.padding(contentPadding)

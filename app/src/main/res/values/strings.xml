@@ -37,4 +37,14 @@
     <string name="delete_account_title">Удаление аккаунта</string>
     <string name="delete_account_text">Для удаления профиля подойтите к администратору</string>
     <string name="delete_account_button_text">Понятно</string>
+
+    <!-- Auth -->
+    <string name="auth_title">MathApp</string>
+    <string name="auth_subtitle">Войдите в аккаунт, чтобы продолжить</string>
+    <string name="auth_login_label">Телефон или почта</string>
+    <string name="auth_password_label">Пароль</string>
+    <string name="auth_button_sign_in">Войти</string>
+    <string name="auth_error_invalid_credentials">Неверный логин или пароль</string>
+    <string name="auth_hint_parent_login">Родитель: %1$s / %2$s</string>
+    <string name="auth_hint_child_login">Ученик: %1$s / %2$s</string>
 </resources>

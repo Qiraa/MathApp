@@ -1,11 +1,19 @@
 package com.example.mathapp.data.profile
 
+import com.example.mathapp.data.profile.AuthMock.UserType
 import com.example.mathapp.domain.profile.Course
 import com.example.mathapp.domain.profile.Profile
 
 class MockProfileRepository : ProfileRepository {
 
     override suspend fun getProfile(): Profile {
+        return when (AuthMock.currentUserType) {
+            UserType.PARENT -> createParent()
+            UserType.CHILD -> createFirstChild()
+        }
+    }
+
+    private fun createParent(): Profile.Parent {
         return Profile.Parent(
             name = "Алексей Иванович Иванов",
             phone = "+7 908 182-65-45",
