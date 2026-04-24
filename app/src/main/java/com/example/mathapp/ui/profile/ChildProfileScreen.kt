@@ -4,21 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mathapp.presentation.profile.ChildProfileState
 import com.example.mathapp.presentation.profile.ChildProfileViewModel
 import com.example.mathapp.presentation.profile.ProfileState
 import com.example.mathapp.ui.common.ErrorScreen
 import com.example.mathapp.ui.common.LoadingScreen
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ChildProfileScreen(
     modifier: Modifier = Modifier,
-    viewModel: ChildProfileViewModel = viewModel(),
+    viewModel: ChildProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
     when (val currentState = state) {
-        ChildProfileState.Error -> ErrorScreen(modifier = modifier)
+        is ChildProfileState.Error -> ErrorScreen(modifier = modifier)
         ChildProfileState.Loading -> LoadingScreen(modifier = modifier)
         is ChildProfileState.Success -> SuccessContent(
             modifier = modifier,

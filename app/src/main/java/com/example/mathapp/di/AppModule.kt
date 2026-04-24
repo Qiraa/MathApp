@@ -1,6 +1,10 @@
 package com.example.mathapp.di
 
 import com.example.mathapp.data.auth.AuthInterceptor
+import com.example.mathapp.data.auth.AuthRepository
+import com.example.mathapp.data.auth.AuthSessionRepository
+import com.example.mathapp.data.auth.InMemoryAuthSessionRepository
+import com.example.mathapp.data.auth.MockAuthRepository
 import com.example.mathapp.data.auth.SessionManager
 import com.example.mathapp.data.journal.JournalRepository
 import com.example.mathapp.data.journal.MockJournalRepository
@@ -11,9 +15,12 @@ import com.example.mathapp.data.profile.ApiProfileRepository
 import com.example.mathapp.data.profile.ProfileRepository
 import com.example.mathapp.data.timetable.MockTimetableRepository
 import com.example.mathapp.data.timetable.TimetableRepository
+import com.example.mathapp.domain.auth.AuthenticateUserUseCase
 import com.example.mathapp.presentation.common.RootViewModel
+import com.example.mathapp.presentation.auth.AuthViewModel
 import com.example.mathapp.presentation.journal.JournalViewModel
 import com.example.mathapp.presentation.notification.NotificationViewModel
+import com.example.mathapp.presentation.profile.ChildProfileViewModel
 import com.example.mathapp.presentation.profile.ProfileViewModel
 import com.example.mathapp.presentation.timetable.TimetableViewModel
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -60,6 +67,9 @@ val appModule = module {
             .create(ApiService::class.java)
     }
 
+    single<AuthRepository> { MockAuthRepository() }
+    single<AuthSessionRepository> { InMemoryAuthSessionRepository() }
+    single { AuthenticateUserUseCase(get(), get()) }
     single { SessionManager(get()) }
 
     single<NotificationRepository> { MockNotificationRepository() }
@@ -68,8 +78,10 @@ val appModule = module {
     single<ProfileRepository> { ApiProfileRepository(get(), get()) }
 
     viewModel { RootViewModel(get()) }
+    viewModel { AuthViewModel(get()) }
     viewModel { TimetableViewModel(get()) }
     viewModel { JournalViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
+    viewModel { ChildProfileViewModel(get()) }
 }

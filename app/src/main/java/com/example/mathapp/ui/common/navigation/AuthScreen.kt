@@ -11,11 +11,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,21 +23,35 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mathapp.data.profile.AuthMock
-import com.example.mathapp.data.profile.AuthMock.UserType
 import com.example.mathapp.R
+import com.example.mathapp.presentation.auth.AuthDestination
+import com.example.mathapp.presentation.auth.AuthEffect
+import com.example.mathapp.presentation.auth.AuthViewModel
 import com.example.mathapp.ui.common.theme.MathAppTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthScreen(
     modifier: Modifier = Modifier,
     onAuthorized: (NavigationScreen) -> Unit,
+    viewModel: AuthViewModel = koinViewModel(),
 ) {
-    var phoneOrEmail by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
+    val state by viewModel.state.collectAsState()
 
     val invalidCredentialsText = stringResource(R.string.auth_error_invalid_credentials)
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is AuthEffect.NavigateToAuthorizedArea -> {
+                    val destination = when (effect.destination) {
+                        AuthDestination.TIMETABLE -> NavigationScreen.Timetable
+                        AuthDestination.PROFILE -> NavigationScreen.Profile
+                    }
+                    onAuthorized(destination)
+                }
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -75,29 +88,23 @@ fun AuthScreen(
             ) {
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = phoneOrEmail,
-                    onValueChange = {
-                        phoneOrEmail = it
-                        error = null
-                    },
+                    value = state.phoneOrEmail,
+                    onValueChange = viewModel::onLoginChanged,
                     label = { Text(stringResource(R.string.auth_login_label)) },
                     singleLine = true,
                 )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        error = null
-                    },
+                    value = state.password,
+                    onValueChange = viewModel::onPasswordChanged,
                     label = { Text(stringResource(R.string.auth_password_label)) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                 )
 
-                if (error != null) {
+                state.errorMessage?.let { error ->
                     Text(
-                        text = error!!,
+                        text = error,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                     )
@@ -107,22 +114,8 @@ fun AuthScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
-                    onClick = {
-                        val userType = AuthMock.authenticate(phoneOrEmail, password)
-                        if (userType == null) {
-                            error = invalidCredentialsText
-                        } else {
-                            AuthMock.currentUserType = userType
-
-                            val startScreen = when (userType) {
-                                UserType.PARENT -> NavigationScreen.Timetable
-                                UserType.CHILD -> NavigationScreen.Profile
-                            }
-
-                            onAuthorized(startScreen)
-                        }
-                    },
-                    enabled = phoneOrEmail.isNotBlank() && password.isNotBlank(),
+                    onClick = { viewModel.authorize(invalidCredentialsText) },
+                    enabled = state.phoneOrEmail.isNotBlank() && state.password.isNotBlank(),
                 ) {
                     Text(stringResource(R.string.auth_button_sign_in))
                 }

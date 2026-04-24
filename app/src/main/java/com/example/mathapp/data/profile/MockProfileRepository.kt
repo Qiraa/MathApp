@@ -1,15 +1,18 @@
 package com.example.mathapp.data.profile
 
-import com.example.mathapp.data.profile.AuthMock.UserType
+import com.example.mathapp.data.auth.AuthSessionRepository
+import com.example.mathapp.data.auth.AuthUserType
 import com.example.mathapp.domain.profile.Course
 import com.example.mathapp.domain.profile.Profile
 
-class MockProfileRepository : ProfileRepository {
+class MockProfileRepository(
+    private val authSessionRepository: AuthSessionRepository,
+) : ProfileRepository {
 
     override suspend fun getProfile(): Profile {
-        return when (AuthMock.currentUserType) {
-            UserType.PARENT -> createParent()
-            UserType.CHILD -> createFirstChild()
+        return when (authSessionRepository.currentUserType) {
+            AuthUserType.PARENT -> createParent()
+            AuthUserType.CHILD -> createFirstChild()
         }
     }
 
